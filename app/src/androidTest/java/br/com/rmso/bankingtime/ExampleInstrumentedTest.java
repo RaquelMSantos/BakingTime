@@ -1,4 +1,4 @@
-package br.com.rmso.cooking;
+package br.com.rmso.bankingtime;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("br.com.rmso.cooking", appContext.getPackageName());
+        assertEquals("br.com.rmso.bankingtime", appContext.getPackageName());
     }
 }

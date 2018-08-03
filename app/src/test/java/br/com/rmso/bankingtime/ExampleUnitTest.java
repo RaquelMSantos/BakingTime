@@ -1,4 +1,4 @@
-package br.com.rmso.cooking;
+package br.com.rmso.bankingtime;
 
 import org.junit.Test;
 
