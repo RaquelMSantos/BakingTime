@@ -1,14 +1,17 @@
-package br.com.rmso.bankingtime.view.activities;
+package br.com.rmso.cooking.view.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.GridLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.GridView;
 
-import br.com.rmso.bankingtime.R;
-import br.com.rmso.bankingtime.view.adapters.RecipeAdapter;
+import br.com.rmso.cooking.R;
+import br.com.rmso.cooking.view.adapters.RecipeAdapter;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by Raquel on 06/08/2018.
+ */
+
+public class MainActivity extends AppCompatActivity{
 
     private RecipeAdapter mRecipeAdapter;
     private GridView mGridView;
