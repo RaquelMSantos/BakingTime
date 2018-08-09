@@ -1,4 +1,4 @@
-package br.com.rmso.cooking.view.adapters;
+package br.com.rmso.cooking.views.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import br.com.rmso.cooking.model.Recipe;
+import br.com.rmso.cooking.models.Recipe;
 
 /**
  * Created by Raquel on 02/08/2018.
