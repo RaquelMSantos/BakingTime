@@ -2,4 +2,11 @@
     <string name="app_name">Cooking</string>
 
     <string name="recipe_name">recipe name</string>
+    <string name="number">1.</string>
+    <string name="title_step">Recipe Introduction</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Steps</string>
+    <string name="quantity">226</string>
+    <string name="measure">G</string>
+    <string name="ingredient">Bittersweet chocolate (60-70% cacao)</string>
 </resources>

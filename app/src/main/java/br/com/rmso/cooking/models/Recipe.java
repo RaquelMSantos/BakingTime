@@ -103,12 +103,17 @@ public class Recipe implements Parcelable{
 
     @Override
     public int describeContents() {
-        return 0;
+        return hashCode();
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-
+        parcel.writeInt(id);
+        parcel.writeString(name);
+        parcel.writeList(ingredients);
+        parcel.writeList(steps);
+        parcel.writeInt(servings);
+        parcel.writeString(image);
     }
 
     public static final Parcelable.Creator<Recipe>CREATOR = new Parcelable.Creator<Recipe>(){

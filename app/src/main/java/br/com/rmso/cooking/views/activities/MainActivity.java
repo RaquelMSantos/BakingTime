@@ -4,6 +4,7 @@ import android.app.LoaderManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -22,6 +23,7 @@ import java.util.List;
 import br.com.rmso.cooking.R;
 import br.com.rmso.cooking.models.Recipe;
 import br.com.rmso.cooking.utilities.RecipeClient;
+import br.com.rmso.cooking.utilities.Utility;
 import br.com.rmso.cooking.views.adapters.RecipeAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,9 +97,9 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         call.enqueue(new Callback<List<Recipe>>() {
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                List<Recipe> recipeList = response.body();
+                Utility.recipeList = response.body();
                 showRecipeDataView();
-                mRecipeAdapter.setRecipeData(recipeList);
+                mRecipeAdapter.setRecipeData(Utility.recipeList);
                 mRecipeAdapter.notifyDataSetChanged();
                 mRecyclerView.getLayoutManager().scrollToPosition(positionList);
             }
@@ -111,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(int itemClicked, Recipe recipeClicked) {
-
+        Intent intent = new Intent(this, DetailRecipeActivity.class);
+        intent.putExtra(DetailRecipeActivity.EXTRA_RECIPE, recipeClicked);
+        startActivity(intent);
     }
 }
