@@ -47,7 +47,10 @@ public class DetailRecipeActivity extends AppCompatActivity implements StepAdapt
         }
 
         mIngredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mIngredientsRecyclerView.setHasFixedSize(true);
+
         mStepsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mStepsRecyclerView.setHasFixedSize(true);
 
         mIngredientAdapter = new IngredientAdapter(Utility.ingredientList);
         mIngredientsRecyclerView.setAdapter(mIngredientAdapter);
@@ -57,6 +60,8 @@ public class DetailRecipeActivity extends AppCompatActivity implements StepAdapt
 
     @Override
     public void onClick(int itemClicked, Step stepClicked) {
-
+        Intent intent = new Intent(this, DetailStepActivity.class);
+        intent.putExtra(DetailStepActivity.EXTRA_STEP, stepClicked);
+        startActivity(intent);
     }
 }

@@ -36,7 +36,6 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
         void onClick(int itemClicked, Step stepClicked);
     }
 
-    @NonNull
     @Override
     public StepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe_step, parent, false);
@@ -70,6 +69,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
             super(view);
             mNumberTextView = itemView.findViewById(R.id.tv_number_step);
             mTitleTextView = itemView.findViewById(R.id.tv_title_step);
+            itemView.setOnClickListener(this);
         }
 
         @Override

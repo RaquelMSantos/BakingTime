@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     public void onClick(int itemClicked, Recipe recipeClicked) {
         Intent intent = new Intent(this, DetailRecipeActivity.class);
         intent.putExtra(DetailRecipeActivity.EXTRA_RECIPE, recipeClicked);
+        Utility.currentRecipe = itemClicked;
         startActivity(intent);
     }
 }

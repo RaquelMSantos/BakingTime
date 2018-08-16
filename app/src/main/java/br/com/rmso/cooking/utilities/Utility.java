@@ -16,4 +16,5 @@ public final class Utility {
     public static List<Recipe> recipeList = new ArrayList<>();
     public static List<Ingredient> ingredientList = new ArrayList<>();
     public static List<Step> stepList = new ArrayList<>();
+    public static int currentRecipe = 0;
 }
