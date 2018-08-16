@@ -1,4 +1,4 @@
-package br.com.rmso.cooking.utilities;
+package br.com.rmso.cooking.utils;
 
 import java.util.ArrayList;
 import java.util.List;

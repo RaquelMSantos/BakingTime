@@ -1,30 +1,20 @@
-package br.com.rmso.cooking.views.activities;
+package br.com.rmso.cooking.ui.activities;
 
-import android.app.LoaderManager;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.GridView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.rmso.cooking.R;
 import br.com.rmso.cooking.models.Recipe;
-import br.com.rmso.cooking.utilities.RecipeClient;
-import br.com.rmso.cooking.utilities.Utility;
-import br.com.rmso.cooking.views.adapters.RecipeAdapter;
+import br.com.rmso.cooking.utils.RecipeClient;
+import br.com.rmso.cooking.utils.Utility;
+import br.com.rmso.cooking.ui.adapters.RecipeAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;

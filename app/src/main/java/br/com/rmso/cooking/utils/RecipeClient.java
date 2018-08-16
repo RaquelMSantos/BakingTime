@@ -1,9 +1,8 @@
-package br.com.rmso.cooking.utilities;
+package br.com.rmso.cooking.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import br.com.rmso.cooking.models.Recipe;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

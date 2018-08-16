@@ -1,8 +1,7 @@
-package br.com.rmso.cooking.views.adapters;
+package br.com.rmso.cooking.ui.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.rmso.cooking.R;
-import br.com.rmso.cooking.models.Ingredient;
 import br.com.rmso.cooking.models.Step;
 
 /**

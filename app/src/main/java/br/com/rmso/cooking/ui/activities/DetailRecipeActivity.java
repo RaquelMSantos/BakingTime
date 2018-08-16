@@ -1,4 +1,4 @@
-package br.com.rmso.cooking.views.activities;
+package br.com.rmso.cooking.ui.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +10,9 @@ import android.widget.TextView;
 import br.com.rmso.cooking.R;
 import br.com.rmso.cooking.models.Recipe;
 import br.com.rmso.cooking.models.Step;
-import br.com.rmso.cooking.utilities.Utility;
-import br.com.rmso.cooking.views.adapters.IngredientAdapter;
-import br.com.rmso.cooking.views.adapters.StepAdapter;
+import br.com.rmso.cooking.utils.Utility;
+import br.com.rmso.cooking.ui.adapters.IngredientAdapter;
+import br.com.rmso.cooking.ui.adapters.StepAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

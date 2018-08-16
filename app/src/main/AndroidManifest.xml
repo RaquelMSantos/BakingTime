@@ -11,15 +11,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.activities.MainActivity">
+        <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.activities.DetailRecipeActivity" />
-        <activity android:name=".views.activities.DetailStepActivity"></activity>
+        <activity android:name=".ui.activities.DetailRecipeActivity" />
+        <activity android:name=".ui.activities.DetailStepActivity"/>
+        <receiver android:name=".ui.widget.RecipeWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recipe_widget_info" />
+        </receiver>
+        <service android:name=".ui.widget.RecipeWidgetService" />
     </application>
 
 </manifest>
