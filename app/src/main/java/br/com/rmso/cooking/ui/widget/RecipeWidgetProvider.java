@@ -5,9 +5,15 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
+import com.google.gson.Gson;
+
+import java.util.List;
+
 import br.com.rmso.cooking.R;
+import br.com.rmso.cooking.models.Ingredient;
 import br.com.rmso.cooking.models.Recipe;
 import br.com.rmso.cooking.ui.activities.DetailRecipeActivity;
 
@@ -17,36 +23,50 @@ import br.com.rmso.cooking.ui.activities.DetailRecipeActivity;
 
 public class RecipeWidgetProvider extends AppWidgetProvider {
 
-    private static final String RECIPE_ID = "idRecipe";
+    static SharedPreferences sharedPreferences;
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-
-        Intent intent = new Intent(context, DetailRecipeActivity.class);
-        Recipe recipe = WidgetHelper.getInstance().getCurrentRecipe();
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, String recipeName, List<Ingredient> ingredientList, int appWidgetId) {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
+        views.setTextViewText(R.id.widget_name_recipe, recipeName);
+        views.removeAllViews(R.id.widget_linear);
 
-        if (recipe != null){
-            views.setTextViewText(R.id.widget_name_recipe, recipe.getName());
-            views.setTextViewText(R.id.widget_ingredients, recipe.getIngredientsString());
+        sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String recipe = sharedPreferences.getString("recipe", null);
 
-            intent.putExtra(RECIPE_ID, recipe.getId());
-        }
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.widget_ingredients, pendingIntent);
+        Intent recipeIntent = new Intent(context, RecipeWidgetService.class);
+        recipeIntent.setAction(RecipeWidgetService.ACTION_UPDATE_RECIPE_WIDGETS);
+        String ingredients = gson.toJson(ingredientList);
+        recipeIntent.putExtra("ingredientList", ingredients);
+        recipeIntent.putExtra("recipe", recipe);
+
+        PendingIntent recipePendingIntent = PendingIntent.getService(context, 0, recipeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget_name_recipe, recipePendingIntent);
+
+       if (ingredientList != null){
+           for (Ingredient ingredient : ingredientList){
+               RemoteViews ingredientView = new RemoteViews(context.getPackageName(), R.layout.item_recipe_ingredient);
+               ingredientView.setTextViewText(R.id.tv_quantity, String.valueOf(ingredient.getQuantity()));
+               ingredientView.setTextViewText(R.id.tv_measure, ingredient.getMeasure());
+               ingredientView.setTextViewText(R.id.tv_ingredient, ingredient.getName());
+
+               views.addView(R.id.widget_linear, ingredientView);
+           }
+       }
+
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-    static void updateWidget (Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    static void updateWidget (Context context, AppWidgetManager appWidgetManager, String recipeName, List<Ingredient> ingredientList, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds){
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, recipeName, ingredientList, appWidgetId);
         }
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        RecipeWidgetService.updateWidget(context);
+        RecipeWidgetService.startActionRecipe(context);
     }
 
     @Override
@@ -62,5 +82,11 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        RecipeWidgetService.startActionRecipe(context);
     }
 }

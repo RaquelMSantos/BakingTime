@@ -12,12 +12,17 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import br.com.rmso.cooking.R;
+import br.com.rmso.cooking.models.Ingredient;
 
 /**
  * Created by Raquel on 15/08/2018.
@@ -26,18 +31,18 @@ import br.com.rmso.cooking.R;
 public class RecipeWidgetService extends IntentService{
 
     public static final String ACTION_UPDATE_RECIPE_WIDGETS = "br.com.rmso.cooking.action.update_recipe_widgets";
+    static SharedPreferences sharedPreferences;
 
     public RecipeWidgetService(){
         super("RecipeWidgetService");
     }
 
-    public static void updateWidget(Context context) {
+    public static void startActionRecipe(Context context) {
         Intent intent = new Intent(context, RecipeWidgetService.class);
         intent.setAction(ACTION_UPDATE_RECIPE_WIDGETS);
         context.startService(intent);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
@@ -48,14 +53,21 @@ public class RecipeWidgetService extends IntentService{
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void handleActionUpdateRecipeWidgets() {
         Context context = getApplicationContext();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        List<Ingredient> ingredientList;
+        sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+
+        Gson gson = new Gson();
+        String result = sharedPreferences.getString("recipe_ingredients", null);
+        Ingredient[] arrayIngredient = gson.fromJson(result, Ingredient[].class);
+        ingredientList = Arrays.asList(arrayIngredient);
+        ingredientList = new ArrayList<>(ingredientList);
+        String recipeName = sharedPreferences.getString("recipe_name", null);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
 
-        RecipeWidgetProvider.updateWidget(this, appWidgetManager, appWidgetIds);
+        RecipeWidgetProvider.updateWidget(this, appWidgetManager, recipeName, ingredientList, appWidgetIds);
     }
 }
