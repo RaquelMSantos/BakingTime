@@ -1,8 +1,10 @@
 package br.com.rmso.cooking.ui.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,10 +30,11 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeAdapterOnClickHandler {
 
     private RecipeAdapter mRecipeAdapter;
-    private LinearLayoutManager layoutManager;
     public static int positionList = 0;
     private static final String BUNDLE_STATE_RECIPE = "stateRecipeBundle";
     public static final String LIST_STATE = "list_state";
+
+    private GridLayoutManager gridLayoutManager;
 
     @BindView(R.id.rv_recipes)
     RecyclerView mRecyclerView;
@@ -42,9 +45,14 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        layoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
+        Configuration configuration = getResources().getConfiguration();
+        int smallestScreenWidthDp = configuration.smallestScreenWidthDp;
+
+        if (smallestScreenWidthDp >= 600){
+            mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        }else {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
 
         mRecipeAdapter = new RecipeAdapter(getApplicationContext(), this);
         mRecyclerView.setAdapter(mRecipeAdapter);

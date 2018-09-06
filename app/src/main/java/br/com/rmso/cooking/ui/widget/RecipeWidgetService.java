@@ -23,6 +23,7 @@ import java.util.Set;
 
 import br.com.rmso.cooking.R;
 import br.com.rmso.cooking.models.Ingredient;
+import br.com.rmso.cooking.utils.Utility;
 
 /**
  * Created by Raquel on 15/08/2018.
@@ -54,20 +55,29 @@ public class RecipeWidgetService extends IntentService{
     }
 
     private void handleActionUpdateRecipeWidgets() {
-        Context context = getApplicationContext();
-        List<Ingredient> ingredientList;
-        sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
 
-        Gson gson = new Gson();
-        String result = sharedPreferences.getString("recipe_ingredients", null);
-        Ingredient[] arrayIngredient = gson.fromJson(result, Ingredient[].class);
-        ingredientList = Arrays.asList(arrayIngredient);
-        ingredientList = new ArrayList<>(ingredientList);
-        String recipeName = sharedPreferences.getString("recipe_name", null);
+        Context context = getApplicationContext();
+//        List<Ingredient> ingredientList;
+//        sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+//        Gson gson = new Gson();
+//        String result = sharedPreferences.getString("recipe_ingredients", null);
+//        Ingredient[] arrayIngredient = gson.fromJson(result, Ingredient[].class);
+//        ingredientList = Arrays.asList(arrayIngredient);
+//        ingredientList = new ArrayList<>(ingredientList);
+//        String recipeName = sharedPreferences.getString("recipe_name", null);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
 
-        RecipeWidgetProvider.updateWidget(this, appWidgetManager, recipeName, ingredientList, appWidgetIds);
+        int id = sharedPreferences.getInt(Utility.PREF_KEY_LAST_RECIPE_ID, -1);
+        String name = sharedPreferences.getString(Utility.PREF_KEY_LAST_RECIPE_NAME, "Indefinido");
+        Optional<Set<String>> ingredients = Optional.ofNullable(sharedPreferences.getStringSet(Utility.PREF_KEY_LAST_RECIPE_INGREDIENTS, null));
+        String formattedIngredients = TextUtils.join("\n\n", ingredients.orElse(new HashSet<>(Arrays.asList("Fail"))));
+
+        RecipeWidgetProvider.updateWidget(this, appWidgetManager, id, name, formattedIngredients, appWidgetIds);
+
     }
 }
