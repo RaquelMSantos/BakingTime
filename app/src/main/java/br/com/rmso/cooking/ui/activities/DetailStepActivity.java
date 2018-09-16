@@ -1,8 +1,11 @@
 package br.com.rmso.cooking.ui.activities;
 
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -21,136 +24,51 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import br.com.rmso.cooking.R;
+import br.com.rmso.cooking.models.Recipe;
 import br.com.rmso.cooking.models.Step;
+import br.com.rmso.cooking.ui.fragments.DetailStepFragment;
 import br.com.rmso.cooking.utils.Utility;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class DetailStepActivity extends AppCompatActivity {
+public class DetailStepActivity extends AppCompatActivity  {
 
-    public static final String EXTRA_STEP = "extraStep";
-    private Step step;
-    private SimpleExoPlayer mExoplayer;
-    private int idStep;
-    private Uri uri;
-    private static final String TAG = DetailStepActivity.class.getSimpleName();
-
-    @BindView(R.id.tv_name_step)
-    TextView mNameStepTextView;
-
-    @BindView(R.id.tv_description_step)
-    TextView mDescriptionTextView;
-
-    @BindView(R.id.exo_play)
-    PlayerView mPlayerView;
-
-    @BindView(R.id.bottom_navigation)
-    BottomNavigationView mBottomNavigationView;
-
+    private int index;
+    private Recipe recipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_step);
-        ButterKnife.bind(this);
 
-        step = (Step) getIntent().getExtras().getSerializable(EXTRA_STEP);
-        if (step != null){
-            idStep = step.getId();
-            mNameStepTextView.setText(step.getShortDescription());
-            mDescriptionTextView.setText(step.getDescription());
-            uri = Uri.parse(step.getVideoUrl());
+        Configuration configuration = getResources().getConfiguration();
+        int smallestScreenWidthDp = configuration.smallestScreenWidthDp;
+
+        if (smallestScreenWidthDp >= 600){
+            Utility.isTablet = true;
+        }else {
+            Utility.isTablet = false;
         }
 
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.action_previous:
-                        idStep--;
-                        loadData();
-                        initializePlayer();
-                        break;
-                    case R.id.action_next:
-                        idStep++;
-                        loadData();
-                        initializePlayer();
-                        break;
-                }
+        recipe = getIntent().getExtras().getParcelable(Utility.RECIPE);
+        index = getIntent().getExtras().getInt(Utility.INDEX,0);
 
-                return true;
-            }
-        });
-
-    }
-
-    private void initializePlayer( ) {
-        if (mExoplayer == null) {
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            mExoplayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
-        }
-            mPlayerView.setPlayer(mExoplayer);
-
-            String userAgent = Util.getUserAgent(this, "Cooking");
-            MediaSource mediaSource = new ExtractorMediaSource(uri, new DefaultDataSourceFactory(this, userAgent), new DefaultExtractorsFactory(), null, null);
-
-            mExoplayer.prepare(mediaSource);
-            mExoplayer.setPlayWhenReady(true);
-    }
-
-    private void releasePlayer() {
-        if (mExoplayer != null) {
-            mExoplayer.stop();
-            mExoplayer.release();
-            mExoplayer = null;
-        }
-    }
-
-    private void loadData() {
-        step = Utility.recipeList.get(Utility.currentRecipe).getSteps().get(idStep);
-
-        mNameStepTextView.setText(step.getShortDescription());
-        mDescriptionTextView.setText(step.getDescription());
-        uri = Uri.parse(step.getVideoUrl());
+        showStep(recipe, index);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(Utility.RECIPE, recipe);
+        outState.putInt(Utility.INDEX, index);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer();
+    public void showStep(Recipe recipe, int position) {
+        if (Utility.isTablet) {
+            this.index = position;
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (Util.SDK_INT <= 23 || mExoplayer == null) {
-            initializePlayer();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
+        DetailStepFragment detailStepFragment = DetailStepFragment.newInstance(recipe, index);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.step_container, detailStepFragment);
+        fragmentTransaction.commit();
     }
 
 }

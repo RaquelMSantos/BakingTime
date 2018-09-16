@@ -1,48 +1,24 @@
 package br.com.rmso.cooking.ui.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.widget.TextView;
-
-import com.google.android.exoplayer2.util.Util;
-
-import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import br.com.rmso.cooking.R;
-import br.com.rmso.cooking.models.Ingredient;
 import br.com.rmso.cooking.models.Recipe;
-import br.com.rmso.cooking.models.Step;
-import br.com.rmso.cooking.ui.widget.RecipeWidgetService;
+import br.com.rmso.cooking.ui.fragments.DetailRecipeFragment;
+import br.com.rmso.cooking.ui.fragments.DetailStepFragment;
 import br.com.rmso.cooking.utils.Utility;
-import br.com.rmso.cooking.ui.adapters.IngredientAdapter;
-import br.com.rmso.cooking.ui.adapters.StepAdapter;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailRecipeActivity extends AppCompatActivity implements StepAdapter.StepAdapterOnClickHandler{
+public class DetailRecipeActivity extends AppCompatActivity implements DetailRecipeFragment.StepClickListener{
 
-    public static final String EXTRA_RECIPE = "extraRecipe";
-    public static final String EXTRA_RECIPE_ID = "extraRecipeId";
-
+    private int index = 0;
     private Recipe recipe;
-    private IngredientAdapter mIngredientAdapter;
-    private StepAdapter mStepAdapter;
-
-    @BindView(R.id.tv_name_recipe_detail)
-    TextView mNameRecipeTextView;
-
-    @BindView(R.id.rv_ingredients)
-    RecyclerView mIngredientsRecyclerView;
-
-    @BindView(R.id.rv_steps)
-    RecyclerView mStepsRecyclerView;
+    private FragmentManager fragmentManager;
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,41 +26,66 @@ public class DetailRecipeActivity extends AppCompatActivity implements StepAdapt
         setContentView(R.layout.activity_detail_recipe);
         ButterKnife.bind(this);
 
-        recipe = getIntent().getExtras().getParcelable(EXTRA_RECIPE);
-        if (recipe != null){
-            mNameRecipeTextView.setText(recipe.getName());
-            Utility.ingredientList = recipe.getIngredients();
-            Utility.stepList = recipe.getSteps();
+        if (savedInstanceState == null) {
+            bundle = getIntent().getExtras();
+            if (bundle.containsKey(Utility.RECIPE)) {
+                recipe = bundle.getParcelable(Utility.RECIPE);
+            }
+
+            fragmentManager = getSupportFragmentManager();
+
+            DetailRecipeFragment detailRecipeFragment = new DetailRecipeFragment();
+            detailRecipeFragment.setArguments(bundle);
+            detailRecipeFragment.setRecipe(recipe);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, detailRecipeFragment)
+                    .commit();
+
+            if (findViewById(R.id.mode_tablet) != null){
+                Utility.isTablet = true;
+                showStep(recipe, index);
+            }else {
+                Utility.isTablet = false;
+            }
         }
 
-        mIngredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mIngredientsRecyclerView.setHasFixedSize(true);
-
-        mStepsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mStepsRecyclerView.setHasFixedSize(true);
-
-        mIngredientAdapter = new IngredientAdapter(Utility.ingredientList);
-        mIngredientsRecyclerView.setAdapter(mIngredientAdapter);
-        mStepAdapter = new StepAdapter(getApplicationContext(), this, Utility.stepList);
-        mStepsRecyclerView.setAdapter(mStepAdapter);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Set<String> formattedIngredients = recipe.getIngredients().stream()
-                .map(Ingredient::toString)
-                .collect(Collectors.toSet());
-
-        sharedPreferences.edit().putInt(Utility.PREF_KEY_LAST_RECIPE_ID, recipe.getId()).apply();
-        sharedPreferences.edit().putString(Utility.PREF_KEY_LAST_RECIPE_NAME, recipe.getName()).apply();
-        sharedPreferences.edit().putStringSet(Utility.PREF_KEY_LAST_RECIPE_INGREDIENTS, formattedIngredients).apply();
-
-
-        RecipeWidgetService.startActionRecipe(this);
     }
 
     @Override
-    public void onClick(int itemClicked, Step stepClicked) {
-        Intent intent = new Intent(this, DetailStepActivity.class);
-        intent.putExtra(DetailStepActivity.EXTRA_STEP, stepClicked);
-        startActivity(intent);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (recipe != null){
+            outState.putParcelable(Utility.RECIPE, recipe);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        recipe = savedInstanceState.getParcelable(Utility.RECIPE);
+    }
+
+    private void showStep (Recipe recipe, int position){
+        if (Utility.isTablet){
+            index = position;
+        }
+
+        DetailStepFragment detailStepFragment = DetailStepFragment.newInstance(recipe, position);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.step_container, detailStepFragment);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void stepClicked(Recipe recipe, int position) {
+        if (!Utility.isTablet){
+            Intent intent = new Intent(this, DetailStepActivity.class);
+            intent.putExtra(Utility.INDEX, position);
+            intent.putExtra(Utility.RECIPE, recipe);
+            startActivity(intent);
+        }else {
+            showStep (recipe, position);
+        }
     }
 }

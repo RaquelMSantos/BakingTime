@@ -19,6 +19,7 @@ import br.com.rmso.cooking.utils.Utility;
 import br.com.rmso.cooking.ui.adapters.RecipeAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,13 +32,10 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     private RecipeAdapter mRecipeAdapter;
     public static int positionList = 0;
-    private static final String BUNDLE_STATE_RECIPE = "stateRecipeBundle";
-    public static final String LIST_STATE = "list_state";
-
-    private GridLayoutManager gridLayoutManager;
 
     @BindView(R.id.rv_recipes)
     RecyclerView mRecyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,28 +48,31 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
         if (smallestScreenWidthDp >= 600){
             mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+            Utility.isTablet = true;
         }else {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            Utility.isTablet = false;
         }
 
         mRecipeAdapter = new RecipeAdapter(getApplicationContext(), this);
         mRecyclerView.setAdapter(mRecipeAdapter);
 
         if (savedInstanceState != null){
-            if (savedInstanceState.containsKey(BUNDLE_STATE_RECIPE)){
-                positionList = savedInstanceState.getInt(LIST_STATE);
+            if (savedInstanceState.containsKey(Utility.BUNDLE_STATE_RECIPE)){
+                positionList = savedInstanceState.getInt(Utility.LIST_STATE);
                 loadRecipeData();
             }
         }else {
             loadRecipeData();
         }
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(BUNDLE_STATE_RECIPE, "stateRecipeBundle");
-        outState.putInt(LIST_STATE, positionList);
         super.onSaveInstanceState(outState);
+        outState.putString(Utility.BUNDLE_STATE_RECIPE, "stateRecipeBundle");
+        outState.putInt(Utility.LIST_STATE, positionList);
     }
 
     @Override
@@ -112,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     @Override
     public void onClick(int itemClicked, Recipe recipeClicked) {
         Intent intent = new Intent(this, DetailRecipeActivity.class);
-        intent.putExtra(DetailRecipeActivity.EXTRA_RECIPE, recipeClicked);
+        intent.putExtra(Utility.RECIPE, recipeClicked);
+        intent.putExtra(Utility.INDEX, itemClicked);
         Utility.currentRecipe = itemClicked;
         startActivity(intent);
     }

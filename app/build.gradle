@@ -48,4 +48,14 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.8.3'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.8.3'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.8.3'
+    //Arch components
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+    //Espresso
+    implementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.2'
+    androidTestCompile 'com.android.support:support-annotations:27.1.1'
+    androidTestCompile 'com.android.support.test:rules:1.0.2'
+    androidTestCompile 'com.android.support.test:runner:1.0.2'
 }

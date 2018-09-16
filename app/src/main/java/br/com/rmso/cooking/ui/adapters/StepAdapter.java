@@ -23,6 +23,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
     private List<Step> stepList;
     private Context context;
     private final StepAdapterOnClickHandler clickHandler;
+    private int index = -1;
 
     public StepAdapter(Context mContext, StepAdapterOnClickHandler mClickHandler, List<Step> mStepList) {
         clickHandler = mClickHandler;
@@ -40,6 +41,11 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
         return new StepAdapter.StepViewHolder(view);
     }
 
+    public void setActiveIndex(int index) {
+        this.index = index;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull StepViewHolder holder, int position) {
         final Step step = stepList.get(position);
@@ -50,13 +56,6 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepViewHolder
     @Override
     public int getItemCount() {
         if (stepList !=null) return stepList.size(); else return 0;
-    }
-
-    public void setStep(ArrayList<Step> stepList) {
-        if (stepList != null){
-            this.stepList = stepList;
-            notifyDataSetChanged();
-        }
     }
 
     public class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
